@@ -1,8 +1,8 @@
 from operator import index
 from turtle import color
 from interface_txt import *
-from interface_csv import *
 from logger import write_log
+from db import *
 
 action_list = ["", '1 - Список команд', '2 - Найти запись', '3 - Вывести весь список',
                '4 - Удалить запись', '5 - Добавить запись', '6 - Импорт из txt файла',
@@ -26,7 +26,7 @@ def start():
             flag = print_dir(read_rows())
             write_log([action_list[act][4:], flag])
         elif act == action_list.index('4 - Удалить запись'):
-            flag = reset_row(input('Укажите id записи, для удаления: '))
+            flag = del_row(input('Укажите id записи, для удаления: '))
             write_log([action_list[act][4:], flag])
         elif act == action_list.index('5 - Добавить запись'):
             flag = appdir()
@@ -61,44 +61,26 @@ def help():
 
 
 def appdir():
-    app_dir = read_rows()
-    new_person = [input(f'Введите {app_dir[0][i]}: ')
-                  for i in range(len(app_dir[0]))]
+    new_person = (input(f'Введите Имя: '),
+        input(f'Введите Фамилию: '),
+        input(f'Введите номер: '),
+        input(f'Введите статус: '))
     write_row(new_person)
     return True
 
 
 def print_dir(dir):
-    if len(dir) < 2:
+    if len(dir) < 1:
         print("Запись не найдена!")
         return False
     else:
         for i in range(len(dir)):
-            if i == 0:
-                row = "ID  "
-            else:
-                row = f'{i}{" "*(4-len(str(i)))}'
+            row = ""
             for j in range(len(dir[i])):
                 temp = (dir[i])[j]
-                row += f'|{temp}{" "*(16-len(temp))}'
+                row += f'|{temp}{" "*(16-len(str(temp)))}'
             print(row)
         return True
-
-
-def reset_row(ind):
-    if not ind.isdigit():
-        print("Некорректный ввод!")
-        return False
-    else:
-        ind = int(ind)
-    dir = read_rows()
-    if ind < 1 or ind > len(dir):
-        print("Запись не найдена")
-        return False
-    else:
-        dir.pop(ind)
-        reset_dir(dir)
-    return True
 
 
 def import_txt():
